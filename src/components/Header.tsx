@@ -25,13 +25,13 @@ export default function Header({ userNickname, isAdmin, locale = 'ko' }: HeaderP
 
   return (
     <header className="sticky top-0 z-10 bg-white border-b-2 border-gray-950">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* 뉴욕 에디토리얼 스타일 로고: 블랙 + 택시 옐로 포인트 */}
-        <Link href="/" className="flex items-center gap-2.5 text-2xl font-black tracking-tight text-gray-950 uppercase">
-          <span className="w-3.5 h-3.5 bg-amber-400" aria-hidden />
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+        {/* 뉴욕 에디토리얼 스타일 로고: 블랙 + 택시 옐로 포인트 (모바일에서 축소) */}
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 text-lg sm:text-2xl font-black tracking-tight text-gray-950 uppercase whitespace-nowrap shrink-0">
+          <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-amber-400 shrink-0" aria-hidden />
           Claude Market
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2.5 sm:gap-4">
           {userNickname ? (
             <>
               <Link href="/my/purchases" className="text-sm text-gray-600 hover:text-gray-950 transition-colors hidden sm:block">
@@ -45,7 +45,7 @@ export default function Header({ userNickname, isAdmin, locale = 'ko' }: HeaderP
               <span className="text-sm text-gray-500 hidden sm:block">{userNickname}</span>
               <button
                 onClick={handleLogout}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors whitespace-nowrap"
               >
                 {t.nav_logout}
               </button>
@@ -53,7 +53,7 @@ export default function Header({ userNickname, isAdmin, locale = 'ko' }: HeaderP
           ) : (
             <Link
               href="/login"
-              className="text-sm font-semibold text-gray-950 border border-gray-950 px-4 py-1.5 hover:bg-gray-950 hover:text-white transition-colors"
+              className="text-sm font-semibold text-gray-950 border border-gray-950 px-3 sm:px-4 py-1.5 hover:bg-gray-950 hover:text-white transition-colors whitespace-nowrap"
             >
               {t.nav_login}
             </Link>

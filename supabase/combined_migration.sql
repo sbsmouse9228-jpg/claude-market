@@ -100,6 +100,12 @@ create policy "파일 비공개 조회"
   on storage.objects for select
   using (bucket_id = 'product-files' and auth.role() = 'authenticated');
 
+-- 미결제 주문은 본인이 새 주문번호로 갱신 가능 (결제 재시도용, paid는 수정 불가)
+create policy "본인 미결제 주문 수정"
+  on public.orders for update
+  using (auth.uid() = buyer_id and status <> 'paid')
+  with check (auth.uid() = buyer_id and status <> 'paid');
+
 -- ===== 005: 유틸리티 함수 =====
 
 -- 다운로드 카운트 증가

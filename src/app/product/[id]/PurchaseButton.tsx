@@ -82,16 +82,22 @@ export default function PurchaseButton({
       const supabase = createClient()
       const tossOrderId = crypto.randomUUID()
 
-      const { error } = await supabase.from('orders').insert({
-        buyer_id: userId,
-        product_id: productId,
-        amount: price,
-        status: 'pending',
-        toss_order_id: tossOrderId,
-      })
+      // 결제 중단으로 남은 pending 주문은 새 주문번호로 재사용 (RLS가 paid 주문 수정은 차단)
+      const { error } = await supabase.from('orders').upsert(
+        {
+          buyer_id: userId,
+          product_id: productId,
+          amount: price,
+          status: 'pending',
+          toss_order_id: tossOrderId,
+        },
+        { onConflict: 'buyer_id,product_id' }
+      )
 
       if (error) {
-        if (error.code === '23505') { alert('이미 구매한 상품이에요.'); router.refresh(); return }
+        if (error.code === '42501' || error.code === '23505') {
+          alert('이미 구매한 상품이에요.'); router.refresh(); return
+        }
         throw new Error('주문 생성 실패')
       }
 

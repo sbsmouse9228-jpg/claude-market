@@ -1,16 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/Header'
 import ProductCard from '@/components/ProductCard'
-import { CATEGORY_LABEL, type ProductCategory } from '@/types'
+import { getLocale } from '@/lib/i18n-server'
+import { getDict, CATEGORY_LABELS } from '@/lib/i18n'
+import type { ProductCategory } from '@/types'
 
 interface Props {
   searchParams: Promise<{ category?: string }>
 }
 
-const CATEGORIES = Object.entries(CATEGORY_LABEL) as [ProductCategory, string][]
-
 export default async function HomePage({ searchParams }: Props) {
   const { category } = await searchParams
+  const locale = await getLocale()
+  const t = getDict(locale)
+  const categories = Object.entries(CATEGORY_LABELS[locale]) as [ProductCategory, string][]
+
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -37,7 +41,7 @@ export default async function HomePage({ searchParams }: Props) {
     .eq('is_published', true)
     .order('created_at', { ascending: false })
 
-  if (category && CATEGORIES.some(([k]) => k === category)) {
+  if (category && categories.some(([k]) => k === category)) {
     query = query.eq('category', category)
   }
 
@@ -45,7 +49,7 @@ export default async function HomePage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header userNickname={profile?.nickname} isAdmin={isAdmin} />
+      <Header userNickname={profile?.nickname} isAdmin={isAdmin} locale={locale} />
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-10">
         {/* 히어로 — 뉴욕 에디토리얼 스타일 */}
@@ -53,18 +57,23 @@ export default async function HomePage({ searchParams }: Props) {
           <div>
             <span className="inline-block w-10 h-1 bg-amber-400 mb-6" aria-hidden />
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-950 leading-tight">
-              디지털 상품 마켓
+              {t.home_title}
             </h1>
           </div>
           <p className="text-sm text-gray-500 tracking-wide sm:pb-1">
-            AI 프롬프트 <span className="text-gray-300 mx-1">/</span> 스타터킷 <span className="text-gray-300 mx-1">/</span> Notion 템플릿 <span className="text-gray-300 mx-1">/</span> 디자인 에셋
+            {t.home_subtitle_items.map((item, i) => (
+              <span key={item}>
+                {i > 0 && <span className="text-gray-300 mx-1">/</span>}
+                {item}
+              </span>
+            ))}
           </p>
         </div>
 
         {/* 카테고리 필터 */}
         <div className="flex gap-2 flex-wrap mb-10">
-          <FilterChip href="/" label="전체" active={!category} />
-          {CATEGORIES.map(([key, label]) => (
+          <FilterChip href="/" label={t.home_all} active={!category} />
+          {categories.map(([key, label]) => (
             <FilterChip
               key={key}
               href={`/?category=${key}`}
@@ -78,14 +87,14 @@ export default async function HomePage({ searchParams }: Props) {
         {products && products.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} locale={locale} />
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center py-20 text-center">
             <span className="text-4xl mb-4">📦</span>
             <p className="text-gray-400">
-              {category ? '해당 카테고리에 상품이 없어요' : '아직 등록된 상품이 없어요'}
+              {category ? t.home_empty_category : t.home_empty}
             </p>
           </div>
         )}

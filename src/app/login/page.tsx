@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import KakaoLoginButton from '@/components/KakaoLoginButton'
+import { getLocale } from '@/lib/i18n-server'
+import { getDict } from '@/lib/i18n'
 import { ShoppingBag } from 'lucide-react'
 
 export default async function LoginPage() {
@@ -10,24 +12,25 @@ export default async function LoginPage() {
 
   if (user && !user.is_anonymous) redirect('/')
 
+  const locale = await getLocale()
+  const t = getDict(locale)
+
   return (
     <main className="flex flex-col min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm flex flex-col items-center gap-8 text-center">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center">
-            <ShoppingBag size={28} className="text-white" />
+          <div className="w-14 h-14 bg-gray-950 flex items-center justify-center">
+            <ShoppingBag size={28} className="text-amber-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">Claude Market</h1>
-          <p className="text-sm text-gray-500">AI 프롬프트 · 스타터킷 · 템플릿 · 에셋</p>
+          <h1 className="text-2xl font-black tracking-tight text-gray-950 uppercase mt-2">Claude Market</h1>
+          <p className="text-sm text-gray-500">{t.login_subtitle}</p>
         </div>
 
         <Suspense>
-          <KakaoLoginButton />
+          <KakaoLoginButton label={t.login_kakao} />
         </Suspense>
 
-        <p className="text-xs text-gray-400">
-          로그인 시 서비스 이용약관에 동의하는 것으로 간주합니다
-        </p>
+        <p className="text-xs text-gray-400">{t.login_terms}</p>
       </div>
     </main>
   )

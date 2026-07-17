@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { getDict, formatPriceLocale, type Locale } from '@/lib/i18n'
 
 interface Props {
   productId: string
@@ -10,6 +11,7 @@ interface Props {
   price: number
   userId: string | null
   hasPurchased: boolean
+  locale?: Locale
 }
 
 declare global {
@@ -39,10 +41,11 @@ function loadTossScript(): Promise<void> {
 }
 
 export default function PurchaseButton({
-  productId, productTitle, price, userId, hasPurchased,
+  productId, productTitle, price, userId, hasPurchased, locale = 'ko',
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const t = getDict(locale)
 
   if (hasPurchased) {
     return (
@@ -50,7 +53,7 @@ export default function PurchaseButton({
         href={`/api/download/${productId}`}
         className="flex items-center justify-center w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
       >
-        다운로드
+        {t.btn_download}
       </a>
     )
   }
@@ -61,7 +64,7 @@ export default function PurchaseButton({
         onClick={() => router.push(`/login?redirect=/product/${productId}`)}
         className="w-full py-3 bg-[#FEE500] text-[#3C1E1E] font-semibold rounded-xl hover:bg-[#F6DC00] transition-colors"
       >
-        카카오 로그인 후 구매
+        {t.btn_login_to_buy}
       </button>
     )
   }
@@ -96,7 +99,7 @@ export default function PurchaseButton({
 
       if (error) {
         if (error.code === '42501' || error.code === '23505') {
-          alert('이미 구매한 상품이에요.'); router.refresh(); return
+          alert(t.alert_already_purchased); router.refresh(); return
         }
         throw new Error('주문 생성 실패')
       }
@@ -113,7 +116,7 @@ export default function PurchaseButton({
     } catch (err: unknown) {
       const e = err as { code?: string }
       if (e?.code === 'USER_CANCEL') { setLoading(false); return }
-      alert('결제 중 오류가 발생했어요. 다시 시도해주세요.')
+      alert(t.alert_pay_error)
       setLoading(false)
     }
   }
@@ -125,7 +128,7 @@ export default function PurchaseButton({
         onClick={handleFreeDownload}
         className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-60 transition-colors"
       >
-        {loading ? '처리 중...' : '무료 다운로드'}
+        {loading ? t.btn_processing : t.btn_free_download}
       </button>
     )
   }
@@ -136,7 +139,7 @@ export default function PurchaseButton({
       onClick={handlePurchase}
       className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-60 transition-colors"
     >
-      {loading ? '결제창 여는 중...' : `${price.toLocaleString()}원 구매하기`}
+      {loading ? t.btn_opening : t.btn_buy(formatPriceLocale(price, locale))}
     </button>
   )
 }

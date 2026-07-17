@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Product, CATEGORY_LABEL } from '@/types'
-import { formatPrice } from '@/lib/utils'
+import { Product } from '@/types'
+import { CATEGORY_LABELS, formatPriceLocale, getDict, type Locale } from '@/lib/i18n'
 import { Download } from 'lucide-react'
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product, locale = 'ko' }: { product: Product; locale?: Locale }) {
+  const t = getDict(locale)
+
   return (
     <Link href={`/product/${product.id}`} className="h-full">
       {/* 뉴욕 에디토리얼 스타일: 직각 모서리 + 강한 보더로 카드 구분 */}
@@ -24,7 +26,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </div>
           )}
           <span className="absolute top-0 left-0 text-[10px] px-2.5 py-1.5 bg-gray-950 text-white font-semibold uppercase tracking-wider">
-            {CATEGORY_LABEL[product.category]}
+            {CATEGORY_LABELS[locale][product.category]}
           </span>
         </div>
 
@@ -42,7 +44,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
           <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
             <span className="font-black text-gray-950">
-              {product.price === 0 ? '무료' : formatPrice(product.price)}
+              {product.price === 0 ? t.free : formatPriceLocale(product.price, locale)}
             </span>
             <span className="flex items-center gap-1 text-xs text-gray-400">
               <Download size={12} />

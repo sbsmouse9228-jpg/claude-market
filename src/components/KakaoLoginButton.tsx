@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useSearchParams } from 'next/navigation'
 
-export default function KakaoLoginButton() {
+export default function KakaoLoginButton({ label = '카카오로 시작하기' }: { label?: string }) {
   const searchParams = useSearchParams()
 
   async function handleLogin() {
@@ -25,7 +25,7 @@ export default function KakaoLoginButton() {
       className="flex items-center justify-center gap-3 w-full max-w-xs px-6 py-3.5 rounded-xl font-semibold text-[#3C1E1E] bg-[#FEE500] hover:bg-[#F6DC00] transition-colors shadow-sm"
     >
       <KakaoIcon />
-      카카오로 시작하기
+      {label}
     </button>
   )
 }

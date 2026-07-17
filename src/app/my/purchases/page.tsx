@@ -3,14 +3,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/Header'
-import { CATEGORY_LABEL, type ProductCategory } from '@/types'
-import { formatPrice } from '@/lib/utils'
+import { getLocale } from '@/lib/i18n-server'
+import { getDict, CATEGORY_LABELS, formatPriceLocale } from '@/lib/i18n'
+import type { ProductCategory } from '@/types'
 import { Download } from 'lucide-react'
 
 export default async function PurchasesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login?redirect=/my/purchases')
+
+  const locale = await getLocale()
+  const t = getDict(locale)
 
   const [{ data: profile }, { data: orders }] = await Promise.all([
     supabase.from('users').select('nickname').eq('id', user.id).single(),
@@ -26,10 +30,10 @@ export default async function PurchasesPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header userNickname={profile?.nickname} isAdmin={isAdmin} />
+      <Header userNickname={profile?.nickname} isAdmin={isAdmin} locale={locale} />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
-        <h1 className="text-xl font-bold text-gray-900 mb-6">내 구매 목록</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-6">{t.purchases_title}</h1>
 
         {orders && orders.length > 0 ? (
           <div className="flex flex-col gap-4">
@@ -56,16 +60,17 @@ export default async function PurchasesPage() {
                   {/* 정보 */}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-indigo-600 font-medium mb-0.5">
-                      {CATEGORY_LABEL[product.category]}
+                      {CATEGORY_LABELS[locale][product.category]}
                     </p>
                     <Link href={`/product/${product.id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-1">
                       {product.title}
                     </Link>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {order.amount === 0 ? '무료' : formatPrice(order.amount)} ·{' '}
-                      {order.paid_at && new Date(order.paid_at).toLocaleDateString('ko-KR', {
-                        year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul',
-                      })}
+                      {order.amount === 0 ? t.free : formatPriceLocale(order.amount, locale)} ·{' '}
+                      {order.paid_at && new Date(order.paid_at).toLocaleDateString(
+                        locale === 'ko' ? 'ko-KR' : 'en-US',
+                        { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' },
+                      )}
                     </p>
                   </div>
 
@@ -75,7 +80,7 @@ export default async function PurchasesPage() {
                     className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors"
                   >
                     <Download size={14} />
-                    받기
+                    {t.purchases_get}
                   </a>
                 </div>
               )
@@ -84,9 +89,9 @@ export default async function PurchasesPage() {
         ) : (
           <div className="flex flex-col items-center py-20 text-center bg-white rounded-2xl border border-dashed border-gray-200">
             <span className="text-4xl mb-4">🛍️</span>
-            <p className="text-gray-400 mb-4">아직 구매한 상품이 없어요</p>
+            <p className="text-gray-400 mb-4">{t.purchases_empty}</p>
             <Link href="/" className="text-sm text-indigo-600 font-medium hover:underline">
-              상품 둘러보기
+              {t.purchases_browse}
             </Link>
           </div>
         )}

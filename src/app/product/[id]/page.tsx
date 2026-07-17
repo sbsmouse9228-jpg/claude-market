@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/Header'
 import PurchaseButton from './PurchaseButton'
-import { CATEGORY_LABEL } from '@/types'
-import { formatPrice } from '@/lib/utils'
+import { getLocale } from '@/lib/i18n-server'
+import { getDict, CATEGORY_LABELS, formatPriceLocale } from '@/lib/i18n'
 import { Download, Tag } from 'lucide-react'
 
 interface Props {
@@ -13,6 +13,8 @@ interface Props {
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params
+  const locale = await getLocale()
+  const t = getDict(locale)
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -48,7 +50,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header userNickname={profile?.nickname} isAdmin={isAdmin} />
+      <Header userNickname={profile?.nickname} isAdmin={isAdmin} locale={locale} />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -76,7 +78,7 @@ export default async function ProductPage({ params }: Props) {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {product.preview_urls.map((url: string, i: number) => (
                   <div key={i} className="w-20 h-20 shrink-0 rounded-lg overflow-hidden relative bg-gray-100">
-                    <Image src={url} alt={`미리보기 ${i + 1}`} fill className="object-cover" />
+                    <Image src={url} alt={`${t.preview_alt} ${i + 1}`} fill className="object-cover" />
                   </div>
                 ))}
               </div>
@@ -87,7 +89,7 @@ export default async function ProductPage({ params }: Props) {
           <div className="flex flex-col gap-5">
             <div>
               <span className="text-xs text-indigo-600 font-medium bg-indigo-50 px-2.5 py-1 rounded-full">
-                {CATEGORY_LABEL[product.category as keyof typeof CATEGORY_LABEL]}
+                {CATEGORY_LABELS[locale][product.category as keyof (typeof CATEGORY_LABELS)['ko']]}
               </span>
               <h1 className="text-2xl font-bold text-gray-900 mt-3 leading-snug">
                 {product.title}
@@ -97,14 +99,14 @@ export default async function ProductPage({ params }: Props) {
             <div className="flex items-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1">
                 <Download size={14} />
-                {product.download_count.toLocaleString()}회 다운로드
+                {product.download_count.toLocaleString()}{t.downloads_suffix}
               </span>
             </div>
 
             {/* 가격 + 구매 */}
             <div className="bg-gray-50 rounded-2xl p-5 flex flex-col gap-4">
               <div className="text-3xl font-bold text-indigo-600">
-                {product.price === 0 ? '무료' : formatPrice(product.price)}
+                {product.price === 0 ? t.free : formatPriceLocale(product.price, locale)}
               </div>
               <PurchaseButton
                 productId={product.id}
@@ -112,6 +114,7 @@ export default async function ProductPage({ params }: Props) {
                 price={product.price}
                 userId={user?.id ?? null}
                 hasPurchased={hasPurchased}
+                locale={locale}
               />
             </div>
 
@@ -129,7 +132,7 @@ export default async function ProductPage({ params }: Props) {
 
         {/* 상세 설명 */}
         <div className="mt-10 bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">상품 설명</h2>
+          <h2 className="font-semibold text-gray-800 mb-4">{t.product_description}</h2>
           <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
             {product.description}
           </div>

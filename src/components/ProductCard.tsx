@@ -6,10 +6,11 @@ import { Download } from 'lucide-react'
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/product/${product.id}`}>
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-indigo-300 hover:shadow-md transition-all group">
+    <Link href={`/product/${product.id}`} className="h-full">
+      {/* 뉴욕 에디토리얼 스타일: 직각 모서리 + 강한 보더로 카드 구분 */}
+      <div className="bg-white border-2 border-gray-200 overflow-hidden hover:border-gray-950 transition-all group h-full flex flex-col">
         {/* 썸네일 */}
-        <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+        <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden border-b-2 border-gray-200 group-hover:border-gray-950 transition-colors">
           {product.thumbnail_url ? (
             <Image
               src={product.thumbnail_url}
@@ -22,14 +23,14 @@ export default function ProductCard({ product }: { product: Product }) {
               <CategoryIcon category={product.category} />
             </div>
           )}
-          <span className="absolute top-2 left-2 text-xs px-2 py-1 bg-white/90 text-gray-700 rounded-full font-medium border border-gray-100">
+          <span className="absolute top-0 left-0 text-[10px] px-2.5 py-1.5 bg-gray-950 text-white font-semibold uppercase tracking-wider">
             {CATEGORY_LABEL[product.category]}
           </span>
         </div>
 
         {/* 정보 */}
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1 text-sm leading-snug">
+        <div className="p-4 flex flex-col flex-1">
+          <h3 className="font-bold text-gray-950 line-clamp-2 mb-1 text-sm leading-snug">
             {product.title}
           </h3>
           {product.tags.length > 0 && (
@@ -39,8 +40,8 @@ export default function ProductCard({ product }: { product: Product }) {
               ))}
             </div>
           )}
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-indigo-600">
+          <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+            <span className="font-black text-gray-950">
               {product.price === 0 ? '무료' : formatPrice(product.price)}
             </span>
             <span className="flex items-center gap-1 text-xs text-gray-400">

@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { ShoppingBag } from 'lucide-react'
 
 interface HeaderProps {
   userNickname?: string
@@ -21,20 +20,21 @@ export default function Header({ userNickname, isAdmin }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-indigo-600">
-          <ShoppingBag size={20} />
+    <header className="sticky top-0 z-10 bg-white border-b-2 border-gray-950">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        {/* 뉴욕 에디토리얼 스타일 로고: 블랙 + 택시 옐로 포인트 */}
+        <Link href="/" className="flex items-center gap-2.5 text-2xl font-black tracking-tight text-gray-950 uppercase">
+          <span className="w-3.5 h-3.5 bg-amber-400" aria-hidden />
           Claude Market
         </Link>
         <nav className="flex items-center gap-4">
           {userNickname ? (
             <>
-              <Link href="/my/purchases" className="text-sm text-gray-600 hover:text-gray-900 transition-colors hidden sm:block">
+              <Link href="/my/purchases" className="text-sm text-gray-600 hover:text-gray-950 transition-colors hidden sm:block">
                 구매 목록
               </Link>
               {isAdmin && (
-                <Link href="/admin" className="text-sm text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
+                <Link href="/admin" className="text-sm font-semibold text-gray-950 underline underline-offset-4 hover:bg-amber-400 transition-colors">
                   관리자
                 </Link>
               )}
@@ -49,7 +49,7 @@ export default function Header({ userNickname, isAdmin }: HeaderProps) {
           ) : (
             <Link
               href="/login"
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+              className="text-sm font-semibold text-gray-950 border border-gray-950 px-4 py-1.5 hover:bg-gray-950 hover:text-white transition-colors"
             >
               로그인
             </Link>

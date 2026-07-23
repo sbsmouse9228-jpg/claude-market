@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import KakaoLoginButton from '@/components/KakaoLoginButton'
+import GoogleLoginButton from '@/components/GoogleLoginButton'
 import { getLocale } from '@/lib/i18n-server'
 import { getDict } from '@/lib/i18n'
 import { ShoppingBag } from 'lucide-react'
@@ -27,7 +28,10 @@ export default async function LoginPage() {
         </div>
 
         <Suspense>
-          <KakaoLoginButton label={t.login_kakao} />
+          <div className="w-full flex flex-col items-center gap-3">
+            <KakaoLoginButton label={t.login_kakao} />
+            <GoogleLoginButton label={t.login_google} />
+          </div>
         </Suspense>
 
         <p className="text-xs text-gray-400">{t.login_terms}</p>

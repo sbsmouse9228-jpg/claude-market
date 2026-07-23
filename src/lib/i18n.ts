@@ -59,7 +59,7 @@ export const dict = {
     preview_alt: '미리보기',
     // 구매 버튼
     btn_download: '다운로드',
-    btn_login_to_buy: '카카오 로그인 후 구매',
+    btn_login_to_buy: '로그인 후 구매',
     btn_free_download: '무료 다운로드',
     btn_processing: '처리 중...',
     btn_opening: '결제창 여는 중...',
@@ -75,6 +75,7 @@ export const dict = {
     login_subtitle: 'AI 프롬프트 · 스타터킷 · 템플릿 · 에셋',
     login_terms: '로그인 시 서비스 이용약관에 동의하는 것으로 간주합니다',
     login_kakao: '카카오로 시작하기',
+    login_google: '구글로 시작하기',
     // 결제 결과
     pay_checking: '결제를 확인하는 중이에요...',
     pay_done: '구매가 완료됐어요!',
@@ -110,7 +111,7 @@ export const dict = {
     preview_alt: 'Preview',
     // Purchase button
     btn_download: 'Download',
-    btn_login_to_buy: 'Log in with Kakao to buy',
+    btn_login_to_buy: 'Log in to buy',
     btn_free_download: 'Free Download',
     btn_processing: 'Processing...',
     btn_opening: 'Opening checkout...',
@@ -126,6 +127,7 @@ export const dict = {
     login_subtitle: 'AI Prompts · Starter Kits · Templates · Assets',
     login_terms: 'By logging in, you agree to our Terms of Service',
     login_kakao: 'Continue with Kakao',
+    login_google: 'Continue with Google',
     // Payment result
     pay_checking: 'Confirming your payment...',
     pay_done: 'Purchase complete!',

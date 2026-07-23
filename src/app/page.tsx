@@ -25,7 +25,8 @@ export default async function HomePage({ searchParams }: Props) {
     if (!data) {
       await supabase.from('users').insert({
         id: user.id,
-        kakao_id: user.user_metadata?.provider_id ?? null,
+        // kakao_id는 카카오 로그인일 때만 저장 (구글 등 다른 provider의 ID 혼입 방지)
+        kakao_id: user.app_metadata?.provider === 'kakao' ? user.user_metadata?.provider_id ?? null : null,
         nickname: user.user_metadata?.full_name ?? user.user_metadata?.name ?? '사용자',
         profile_image: user.user_metadata?.avatar_url ?? null,
       })

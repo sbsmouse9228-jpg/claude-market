@@ -59,6 +59,7 @@ export const dict = {
     preview_alt: '미리보기',
     // 구매 버튼
     btn_download: '다운로드',
+    btn_download_done: '다운완료',
     btn_login_to_buy: '로그인 후 구매',
     btn_free_download: '무료 다운로드',
     btn_processing: '처리 중...',
@@ -111,6 +112,7 @@ export const dict = {
     preview_alt: 'Preview',
     // Purchase button
     btn_download: 'Download',
+    btn_download_done: 'Downloaded',
     btn_login_to_buy: 'Log in to buy',
     btn_free_download: 'Free Download',
     btn_processing: 'Processing...',

@@ -45,15 +45,23 @@ export default function PurchaseButton({
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [downloaded, setDownloaded] = useState(false)
   const t = getDict(locale)
+
+  // 다운로드 클릭 → OS 저장 다이얼로그가 뜨면서 창이 포커스를 잃었다가,
+  // 저장/닫기로 다이얼로그가 사라지면 다시 포커스를 얻는 시점을 '다운완료' 신호로 사용
+  function handleDownloadClick() {
+    window.addEventListener('focus', () => setDownloaded(true), { once: true })
+  }
 
   if (hasPurchased) {
     return (
       <a
         href={`/api/download/${productId}`}
+        onClick={handleDownloadClick}
         className="flex items-center justify-center w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
       >
-        {t.btn_download}
+        {downloaded ? t.btn_download_done : t.btn_download}
       </a>
     )
   }
@@ -71,12 +79,19 @@ export default function PurchaseButton({
 
   async function handleFreeDownload() {
     setLoading(true)
-    const supabase = createClient()
-    await supabase.from('orders').upsert(
-      { buyer_id: userId, product_id: productId, amount: 0, status: 'paid', paid_at: new Date().toISOString() },
-      { onConflict: 'buyer_id,product_id', ignoreDuplicates: true }
-    )
+    const res = await fetch('/api/orders/free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId }),
+    })
+    if (!res.ok) {
+      alert(t.alert_pay_error)
+      setLoading(false)
+      return
+    }
     window.location.href = `/api/download/${productId}`
+    router.refresh()
+    setLoading(false)
   }
 
   async function handlePurchase() {
